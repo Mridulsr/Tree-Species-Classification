@@ -1,0 +1,48 @@
+# tree_species_colab.ipynb
+
+# 1. Install dependencies
+!pip install pandas scikit-learn xgboost matplotlib seaborn
+
+# 2. Unzip uploaded file
+import zipfile, os
+
+zip_path = "/content/archive.zip"  # update path if needed
+with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    zip_ref.extractall("/content/data")
+
+# 3. Inspect files
+import os
+for root, dirs, files in os.walk("/content/data"):
+    for f in files:
+        print("Found file:", f)
+
+# 4. Load the dataset
+import pandas as pd
+
+# Try reading the main CSV (adjust filename if needed)
+df = pd.read_csv("/content/data/<your_csv_file>.csv")  # <- Replace with real file name
+print(df.head())
+
+# 5. Preprocessing
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+# Assuming target column is 'species'
+X = df.drop('species', axis=1)
+y = LabelEncoder().fit_transform(df['species'])
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 6. Train a model
+from xgboost import XGBClassifier
+model = XGBClassifier()
+model.fit(X_train, y_train)
+
+# 7. Evaluate
+from sklearn.metrics import accuracy_score
+preds = model.predict(X_test)
+print("Accuracy:", accuracy_score(y_test, preds))
+
+# 8. Save model
+import joblib
+joblib.dump(model, "model.pkl")
