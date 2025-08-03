@@ -15,9 +15,6 @@ from datetime import datetime
 import io
 import time # For simulated delays
 
-# Suppress warnings from matplotlib for pyplot usage in Streamlit
-st.set_option('deprecation.showPyplotGlobalUse', False)
-
 # ========== PAGE CONFIG ==========
 st.set_page_config(
     page_title="🌳 Tree Species Classifier",
@@ -907,3 +904,4 @@ st.markdown("*Helping preserve and understand our urban forests through technolo
 
 if __name__ == "__main__":
     main()
+
