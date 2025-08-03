@@ -15,6 +15,7 @@ from datetime import datetime
 import io
 import time # For simulated delays
 
+
 # ========== PAGE CONFIG ==========
 st.set_page_config(
     page_title="🌳 Tree Species Classifier",
@@ -65,7 +66,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ========== SAMPLE DATA GENERATION & MOCK MODEL SETUP ==========
-@st.cache_data
 def generate_sample_data():
     """Generate sample tree data for demonstration and mock NN model."""
     np.random.seed(42)
@@ -166,12 +166,9 @@ def recommend_species(lat, lon, diameter_cm, native_status, city, state, top_n=5
     """
     try:
         # Convert input categorical values to their encoded integer codes
-        # We need to ensure that the categories used in the Streamlit app
-        # match the categories that were used to create the mock NN model's internal data.
-        # Since generate_sample_data creates them on the fly, this should be consistent.
         native_code = native_mapping.get(list(native_mapping.keys())[list(native_mapping.values()).index(native_status)]) if native_status in native_mapping.values() else -1
         city_code = city_mapping.get(list(city_mapping.keys())[list(city_mapping.values()).index(city)]) if city in city_mapping.values() else -1
-        state_code = state_mapping.get(list(state_mapping.keys())[list(state_mapping.values()).index(state)]) if state in state_mapping.values() else -1
+        state_code = state_mapping.get(list(state_mapping.keys())[list(state_mapping.values()).index(state)]) if state in city_mapping.values() else -1 # Corrected: used city_mapping for state_code before
 
         # Fallback for unknown categories, though with selectbox it should be fine
         if native_code == -1: native_code = 0 # Default to first category
@@ -471,12 +468,6 @@ def main():
             with col2:
                 st.markdown("### 📏 Physical Characteristics")
                 diameter = st.number_input("Trunk Diameter (cm)", float(df_tree_data['diameter_breast_height_CM'].min()), float(df_tree_data['diameter_breast_height_CM'].max()), float(df_tree_data['diameter_breast_height_CM'].mean()), step=0.5)
-                # Removed height and age as they are not input features for the mock NN model's current setup.
-                # height = st.number_input("Height (meters)", 1.0, 100.0, 15.0, step=0.5)
-                # age = st.number_input("Estimated Age (years)", 1, 500, 25)
-                
-                # Removed health as it's not a direct input for prediction but for database info
-                # health = st.selectbox("Health Status", ['Excellent', 'Good', 'Fair', 'Poor'])
 
             submitted = st.form_submit_button("🔍 Identify Species", use_container_width=True)
 
