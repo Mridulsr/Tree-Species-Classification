@@ -904,4 +904,3 @@ st.markdown("*Helping preserve and understand our urban forests through technolo
 
 if __name__ == "__main__":
     main()
-
